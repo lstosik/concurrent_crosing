@@ -10,11 +10,15 @@ extern "C" {
 #else
 #include <sys/types.h>	
 #endif	
+typedef enum {
+    car, tram, pedestriant
+} task_type;
 typedef struct {
     int id;
     int posX;
     int posY;
     int alive;
+    task_type type;
 #ifdef USE_PTHREADS	
 	pthread_t thread;
 #else

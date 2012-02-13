@@ -26,9 +26,12 @@ extern "C" {
 extern int *map;
 void map_lock(void);
 void map_unlock(void);
-int place_at(int id, int x, int y);
-int remove_from(int id, int x, int y);
-int move_to(int id, int x, int y, int fromX, int fromY);
+int place_at(int x, int y);
+int remove_from(int x, int y);
+int move_to(int x, int y, int fromX, int fromY);
+int shr_place_at(int x, int y);
+int shr_remove_from(int x, int y);
+int shr_move_to(int x, int y, int fromX, int fromY);
 
 
 #ifdef	__cplusplus
