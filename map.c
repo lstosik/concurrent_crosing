@@ -1,12 +1,16 @@
 #include "map.h"
 
+unsigned int index(int x, int y) {
+    unsigned int realX = (unsigned int)(x+(-MIN_X));
+    unsigned int realY = (unsigned int)(y+(-MIN_Y));
+    return realX*TOTAL_Y+realY;
+}
 
 int place_at(int x, int y) {
-    unsigned int realX = x+(-MIN_X);
-    unsigned int realY = y+(-MIN_Y);
+    unsigned int i = index(x,y);
     map_lock();
-    if (map[realX*TOTAL_Y+realY] == 0) {
-        map[realX*TOTAL_Y+realY] = 1;
+    if (map[i] == 0) {
+        map[i] = 1;
         map_unlock();
         return 1;
     } else {
@@ -16,23 +20,36 @@ int place_at(int x, int y) {
 }
 
 int remove_from(int x, int y) {
-    unsigned int realX = x+(-MIN_X);
-    unsigned int realY = y+(-MIN_Y);
+    unsigned int idx = index(x,y);
 	map_lock();
-	map[realX*TOTAL_Y+realY] = 0;
+	map[idx] = 0;
 	map_unlock();
     return 1;
 }
 
 int move_to(int x, int y, int fromX, int fromY) {
-    unsigned int realX = x+(-MIN_X);
-    unsigned int realY = y+(-MIN_Y);
-    unsigned int realFromX = fromX+(-MIN_X);
-    unsigned int realFromY = fromY+(-MIN_Y);
+    unsigned int idx = index(x,y);
+    unsigned int from_idx = index(fromX,fromY);
 	map_lock();
-    if (map[realX*TOTAL_Y+realY] == 0) {
-        map[realX*TOTAL_Y+realY] = 1;
-        map[realFromX*TOTAL_Y+realFromY] = 0;
+    if (x == SIDEWALK_LEFT && fromX < x && !lights->slot[L_CAR_LEFT]) {
+        map_unlock();
+        return 0;
+    }
+    if (x == SIDEWALK_RIGHT && fromX > x && !lights->slot[L_CAR_RIGHT]) {
+        map_unlock();
+        return 0;
+    }
+    if (y == SIDEWALK_TOP && fromY < y && !lights->slot[L_CAR_TOP]) {
+        map_unlock();
+        return 0;
+    }
+    if (y == SIDEWALK_BOTTOM && fromY > y && !lights->slot[L_CAR_BOTTOM]) {
+        map_unlock();
+        return 0;
+    }
+    if (map[idx] == 0) {
+        map[idx] = 1;
+        map[from_idx] = 0;
 		map_unlock();
         return 1;
     } else {
@@ -44,11 +61,10 @@ int move_to(int x, int y, int fromX, int fromY) {
 
 
 int shr_place_at(int x, int y) {
-    unsigned int realX = x+(-MIN_X);
-    unsigned int realY = y+(-MIN_Y);
+    unsigned int i = index(x,y);
     map_lock();
-    if (map[realX*TOTAL_Y+realY] <= 0) {
-        map[realX*TOTAL_Y+realY]--;
+    if (map[i] <= 0) {
+        map[i]--;
         map_unlock();
         return 1;
     } else {
@@ -58,23 +74,60 @@ int shr_place_at(int x, int y) {
 }
 
 int shr_remove_from(int x, int y) {
-    unsigned int realX = x+(-MIN_X);
-    unsigned int realY = y+(-MIN_Y);
+    unsigned int idx = index(x,y);
 	map_lock();
-	map[realX*TOTAL_Y+realY]++;
+	map[idx]++;
 	map_unlock();
     return 1;
 }
 
 int shr_move_to(int x, int y, int fromX, int fromY) {
-    unsigned int realX = x+(-MIN_X);
-    unsigned int realY = y+(-MIN_Y);
-    unsigned int realFromX = fromX+(-MIN_X);
-    unsigned int realFromY = fromY+(-MIN_Y);
+    unsigned int idx = index(x,y);
+    unsigned int from_idx = index(fromX,fromY);
 	map_lock();
-    if (map[realX*TOTAL_Y+realY] <= 0) {
-        map[realX*TOTAL_Y+realY] --;
-        map[realFromX*TOTAL_Y+realFromY]++;
+    if (x == LANE_LEFT && fromX < x) {
+        if (fromY < 0 && !lights->slot[L_P_TOP_LEFT]) {
+            map_unlock();
+            return 0;
+        } 
+        if (fromY > 0 && !lights->slot[L_P_BOTTOM_LEFT]) {
+            map_unlock();
+            return 0;
+        }             
+    }
+    if (x == LANE_RIGHT && fromX > x) {
+        if (fromY < 0 && !lights->slot[L_P_TOP_RIGHT]) {
+            map_unlock();
+            return 0;
+        } 
+        if (fromY > 0 && !lights->slot[L_P_BOTTOM_RIGHT]) {
+            map_unlock();
+            return 0;
+        }
+    }
+    if (y == LANE_TOP && fromY < y) {
+        if (fromX < 0 && !lights->slot[L_P_LEFT_TOP]) {
+            map_unlock();
+            return 0;
+        } 
+        if (fromX > 0 && !lights->slot[L_P_RIGHT_TOP]) {
+            map_unlock();
+            return 0;
+        }
+    }
+    if (y == LANE_BOTTOM && fromY > y) {
+        if (fromX < 0 && !lights->slot[L_P_LEFT_BOTTOM]) {
+            map_unlock();
+            return 0;
+        } 
+        if (fromX > 0 && !lights->slot[L_P_RIGHT_BOTTOM]) {
+            map_unlock();
+            return 0;
+        }
+    }
+    if (map[idx] <= 0) {
+        map[idx] --;
+        map[from_idx]++;
 		map_unlock();
         return 1;
     } else {
@@ -82,3 +135,4 @@ int shr_move_to(int x, int y, int fromX, int fromY) {
         return 0;
     }
 }
+

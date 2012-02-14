@@ -23,7 +23,19 @@ extern "C" {
 #endif
 	
 #include "config.h"
+typedef enum {
+    L_CAR_TOP, L_TRAM_TOP, L_P_TOP_LEFT, L_P_TOP_RIGHT,
+    L_CAR_BOTTOM, L_TRAM_BOTTOM, L_P_BOTTOM_LEFT, L_P_BOTTOM_RIGHT,
+    L_CAR_LEFT, L_TRAM_LEFT, L_P_LEFT_TOP, L_P_LEFT_BOTTOM,
+    L_CAR_RIGHT, L_TRAM_RIGHT, L_P_RIGHT_TOP, L_P_RIGHT_BOTTOM,
+    L_LENGTH, L_LAST
+} light_slot_values;
+typedef struct {
+    int slot[L_LAST];
+} light_state;
+
 extern int *map;
+extern light_state * lights;
 void map_lock(void);
 void map_unlock(void);
 int place_at(int x, int y);

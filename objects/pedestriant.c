@@ -98,6 +98,7 @@ void* pedestriant_ep(void *arg) {
             dx = 0;
             dy = -1;
         }
+        free(map_p);
         
         try_move(ctx,dx,dy);
         sleep(1);

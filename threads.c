@@ -14,11 +14,13 @@
 #include "objects/car.h"
 #include "objects/tram.h"
 #include "objects/pedestriant.h"
-
+#include "light_changer.h"
 task_context_t *cars;
 
 int *map;
 int curses = 1;
+light_state * lights;
+pthread_t light_changer;
 int main(int argc, __attribute__((unused)) char **argv) {
 	if (argc > 1) {
 		curses = 0;
@@ -26,6 +28,8 @@ int main(int argc, __attribute__((unused)) char **argv) {
 	void * map_p = calloc(TOTAL_X*TOTAL_Y, sizeof (int));
 	map = (int*) map_p;
 	cars = calloc(MAX_CARS, sizeof (task_context_t));
+    lights = calloc(1, sizeof (light_state));
+    pthread_create(&light_changer, NULL, light_changer_ep, NULL);
 	for (int i = 0; i < MAX_CARS; i++) {
 		task_start(i);
 	}

@@ -14,8 +14,8 @@ extern "C" {
 #define MAX_X 10
 #define MAX_Y 10
 #define MAX_CARS 30
-#define TOTAL_X -(MIN_X-MAX_X-1)
-#define TOTAL_Y -(MIN_Y-MAX_Y-1)
+#define TOTAL_X (-(MIN_X-MAX_X-1))
+#define TOTAL_Y (-(MIN_Y-MAX_Y-1))
 
 #define LANE_TOP -2
 #define LANE_BOTTOM 2
